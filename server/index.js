@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: process.env.BASE_URL || "https://tg-chat-app.vercel.app",
+    origin: process.env.BASE_URL || "http://localhost:3000",
     methods: ["GET", "POST"]
   }
 });
