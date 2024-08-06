@@ -26,6 +26,11 @@ app.use(cors());
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Alapértelmezett útvonal kezelő
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
+
 // Handle socket connections
 io.on('connection', (socket) => {
   socket.on('join', ({ username }) => {
