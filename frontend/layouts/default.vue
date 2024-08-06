@@ -5,12 +5,21 @@
   </template>
   
   <script setup>
+  import { onMounted } from 'vue';
   import { useNuxtApp } from '#app';
   
   // Log connection status
   const nuxtApp = useNuxtApp();
-  nuxtApp.$socket.on('connect', () => {
-    console.log('Connected to server');
+  
+  onMounted(() => {
+    if (!nuxtApp.$socket) {
+      console.error('$socket is not defined');
+      return;
+    }
+    
+    nuxtApp.$socket.on('connect', () => {
+      console.log('Connected to server');
+    });
   });
   </script>
   

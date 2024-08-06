@@ -36,7 +36,7 @@
       </div>
     </div>
   </template>
-  
+
   <script>
   import { ref, onMounted } from 'vue';
   import { useNuxtApp } from '#app';
@@ -44,7 +44,7 @@
   export default {
     data() {
       return {
-        username: localStorage.getItem('username') || '',
+        username: '',
         users: [],
         chatMessages: [],
         messageText: '',
@@ -72,6 +72,7 @@
       }
     },
     mounted() {
+      this.username = localStorage.getItem('username') || '',
       this.messagesContainer = this.$refs.messagesContainer;
       if (this.username) {
         this.$socket.emit('join', { username: this.username });
@@ -95,16 +96,14 @@
     }
   };
   </script>
-  
+
   <style scoped>
   .messages {
     height: calc(100vh - 118px);
     overflow-y: auto;
-
     @media (max-width: 769px) {
         height: calc(100vh - 280px);
     }
-
   }
   
   .text-message-style {
@@ -119,11 +118,8 @@
     overflow-y: auto;
     height: calc(100vh - 94px);
     padding-right: 5px;
-
     @media (max-width: 769px) {
         height: 85px;
     }
-
   }
   </style>
-  

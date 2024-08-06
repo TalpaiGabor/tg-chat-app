@@ -1,9 +1,6 @@
-import io from 'socket.io-client';
-import { useRuntimeConfig } from '#app';
+import { io } from 'socket.io-client';
 
-export default ({ app }, inject) => {
-  const config = useRuntimeConfig();
-  const socket = io(config.public.apiURL);
-
-  inject('socket', socket);
-};
+export default defineNuxtPlugin(nuxtApp => {
+  const socket = io(process.env.API_URL || 'http://localhost:3001');
+  nuxtApp.provide('socket', socket);
+});

@@ -2,6 +2,9 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
+const path = require('path');
+const useragent = require('useragent');
 
 const app = express();
 const server = http.createServer(app);
@@ -14,60 +17,53 @@ const io = socketIo(server, {
 
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
-app.use(express.json());
-
-// Alapértelmezett útvonal
-app.get('/', (req, res) => {
-  res.send('Server is running');
-});
-
 let users = {};
 let messages = [];
 
-io.on('connection', (socket) => {
-  console.log('New client connected:', socket.id);
+// CORS middleware hozzáadása
+app.use(cors());
 
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Handle socket connections
+io.on('connection', (socket) => {
   socket.on('join', ({ username }) => {
-    users[socket.id] = { username, userColor: getRandomColor() };
+    const userId = uuidv4();
+    const userColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    users[socket.id] = { username, userId, userColor, socketId: socket.id };
     io.emit('userList', Object.values(users));
-    console.log(`${username} joined`);
+    socket.emit('chatHistory', messages);
   });
 
   socket.on('message', (message) => {
     const user = users[socket.id];
     if (user) {
-      const msg = {
+      const agent = useragent.parse(socket.handshake.headers['user-agent']);
+      const userOs = agent.os.toString();
+      const userBrowser = agent.toAgent();
+
+      const fullMessage = {
         ...message,
         username: user.username,
+        userId: user.userId,
         userColor: user.userColor,
         ip: socket.handshake.address,
-        userAgent: socket.handshake.headers['user-agent']
+        userAgent: `${userOs}~${userBrowser}`
       };
-      messages.push(msg);
-      io.emit('message', msg);
+      messages.push(fullMessage);
+      if (messages.length > 1024) messages.shift();
+      io.emit('message', fullMessage);
     }
   });
 
   socket.on('disconnect', () => {
-    const user = users[socket.id];
-    if (user) {
-      console.log(`${user.username} disconnected`);
-      delete users[socket.id];
-      io.emit('userList', Object.values(users));
-    }
+    delete users[socket.id];
+    io.emit('userList', Object.values(users));
   });
 });
 
+// Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-function getRandomColor() {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
