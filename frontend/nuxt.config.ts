@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-08-06',
   runtimeConfig: {
       public: {
-        baseURL: process.env.BASE_URL || 'http://localhost:3000',
+        baseURL: process.env.BASE_URL || 'https://tg-chat-app.vercel.app',
         apiURL: process.env.API_URL || 'https://tg-chat-api-domain.com'
       }
     }
