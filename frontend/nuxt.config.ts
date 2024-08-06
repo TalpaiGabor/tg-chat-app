@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
       public: {
         baseURL: process.env.BASE_URL || 'http://localhost:3000',
-        apiURL: process.env.API_URL || 'http://localhost:3001'
+        apiURL: process.env.API_URL || 'https://tg-chat-api-domain.com'
       }
     }
 })
