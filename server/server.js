@@ -23,6 +23,9 @@ let messages = [];
 // CORS middleware hozzáadása
 app.use(cors());
 
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Handle socket connections
 io.on('connection', (socket) => {
   socket.on('join', ({ username }) => {
