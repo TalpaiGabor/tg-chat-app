@@ -8,7 +8,6 @@
   import { onMounted } from 'vue';
   import { useNuxtApp } from '#app';
   
-  // Log connection status
   const nuxtApp = useNuxtApp();
   
   onMounted(() => {
